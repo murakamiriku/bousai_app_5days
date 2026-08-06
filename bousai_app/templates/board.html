@@ -3,23 +3,90 @@
 {% block title %}指示・発信ボード - 防災アプリ{% endblock %}
 
 {% block content %}
-<h2>発信ボード</h2>
-<p>住民向けの発信を登録・確認できます。</p>
+<div class="container">
+  <div class="card">
+    <div class="results-header">
+      <div>
+        <div class="eyebrow">指示・発信ボード</div>
+        <h2>一覧・作成・編集</h2>
+      </div>
+      <div class="results-actions">
+        <a href="/board/internal/new" class="primary-btn">庁内向け指示作成</a>
+        <a href="/board/resident/new" class="secondary-btn">住民向け発信作成</a>
+      </div>
+    </div>
 
-<!-- 発信一覧 -->
-<h3>発信一覧</h3>
-{% if instructions %}
-<table border="1" cellpadding="5">
-  <tr>
-    <th>内容</th>
-  </tr>
-  {% for inst in instructions %}
-  <tr>
-    <td>{{ inst.content }}{% if inst.shelter %}（避難先: {{ inst.shelter }}）{% endif %}</td>
-  </tr>
-  {% endfor %}
-</table>
-{% else %}
-<p>登録されている指示はありません。</p>
-{% endif %}
+    <div class="board-sections">
+      <section class="board-section">
+        <h3>庁内向け指示一覧</h3>
+        {% if internal_instructions %}
+        <div class="board-list">
+          {% for item in internal_instructions %}
+          <article class="board-item">
+            <div class="board-top">
+              <strong>{{ item.title or item.content }}</strong>
+              <span class="status">{{ item.status or '未設定' }}</span>
+            </div>
+            <div class="meta">作成日時: {{ item.created_at }}</div>
+            <div class="meta">宛先: {{ item.recipient_department or item.target }}</div>
+            <div class="meta">優先度: {{ item.priority or '指定なし' }} / 対応期限: {{ item.deadline or '指定なし' }}</div>
+            <div class="meta">内容: {{ item.content }}</div>
+            {% if item.status == '下書き' %}
+            <div class="actions">
+              <a href="/board/edit/{{ item.id }}" class="secondary-btn">編集</a>
+            </div>
+            {% endif %}
+          </article>
+          {% endfor %}
+        </div>
+        {% else %}
+        <p>登録されている庁内向け指示はありません。</p>
+        {% endif %}
+      </section>
+
+      <section class="board-section">
+        <h3>住民向け発信一覧</h3>
+        {% if resident_instructions %}
+        <div class="board-list">
+          {% for item in resident_instructions %}
+          <article class="board-item">
+            <div class="board-top">
+              <strong>{{ item.title or item.content }}</strong>
+              <span class="status">{{ item.status or '未設定' }}</span>
+            </div>
+            <div class="meta">作成日時: {{ item.created_at }}</div>
+            <div class="meta">エリア: {{ item.area or '指定なし' }} / 緊急度: {{ item.urgency or '指定なし' }}</div>
+            <div class="meta">内容: {{ item.content }}</div>
+            {% if item.status == '下書き' %}
+            <div class="actions">
+              <a href="/board/edit/{{ item.id }}" class="secondary-btn">編集</a>
+            </div>
+            {% endif %}
+          </article>
+          {% endfor %}
+        </div>
+        {% else %}
+        <p>登録されている住民向け発信はありません。</p>
+        {% endif %}
+      </section>
+    </div>
+  </div>
+</div>
+
+<style>
+  .results-header { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom: 16px; }
+  .results-actions { display:flex; gap:10px; flex-wrap:wrap; }
+  .primary-btn, .secondary-btn { display:inline-flex; align-items:center; justify-content:center; border-radius:999px; padding: 10px 14px; font-weight:700; text-decoration:none; }
+  .primary-btn { background:#1b4f9b; color:#fff; }
+  .secondary-btn { background:#eaf3ff; color:#1b4f9b; }
+  .board-sections { display:grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .board-section { border: 1px solid #e5eef8; border-radius: 12px; padding: 14px; background:#fbfdff; }
+  .board-list { display:grid; gap:10px; }
+  .board-item { border: 1px solid #e5eef8; border-radius: 10px; padding: 12px; background:#fff; }
+  .board-top { display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom: 8px; }
+  .status { font-size:0.85rem; background:#eaf3ff; color:#1b4f9b; padding:4px 8px; border-radius:999px; }
+  .meta { font-size:0.92rem; color:#516a83; margin-top:4px; }
+  .actions { margin-top:8px; }
+  @media (max-width: 900px) { .board-sections { grid-template-columns: 1fr; } }
+</style>
 {% endblock %}

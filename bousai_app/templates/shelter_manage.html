@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+  <div class="card">
+    <div class="card-title">
+      <div class="icon">🛠️</div>
+      <div>避難所管理</div>
+    </div>
+    <p>登録・更新・削除を選んで避難所情報を管理できます。</p>
+  </div>
+
+  <div class="card manage-layout">
+    <div class="manage-actions">
+      <h3>操作</h3>
+      <div class="action-list">
+        <button type="button" class="action-btn is-active" data-action="create">新規登録</button>
+        <button type="button" class="action-btn" data-action="update">更新</button>
+        <button type="button" class="action-btn" data-action="delete">削除</button>
+      </div>
+
+      <h3>避難所一覧</h3>
+      <select id="shelterSelect" name="shelter_id" form="manageForm">
+        <option value="">避難所を選択</option>
+        {% for shelter in shelters %}
+          <option value="{{ shelter.id }}" {% if selected_shelter_id == shelter.id %}selected{% endif %}>{{ shelter.name }}</option>
+        {% endfor %}
+      </select>
+      <p class="hint">更新・削除時は一覧から対象を選択してください。</p>
+    </div>
+
+    <div class="manage-form-area">
+      {% if message %}
+        <div class="message {{ message_type }}">{{ message }}</div>
+      {% endif %}
+
+      <form id="manageForm" method="post" action="/shelter_manage">
+        <input type="hidden" name="action" id="actionInput" value="create">
+        <input type="hidden" name="shelter_id" id="shelterIdInput" value="{{ selected_shelter_id }}">
+
+        <div id="createForm" class="form-panel">
+          <div class="field-row">
+            <label>郵便番号</label>
+            <div class="inline-fields">
+              <input type="text" name="postal_code_1" maxlength="3" placeholder="000">
+              <span>-</span>
+              <input type="text" name="postal_code_2" maxlength="4" placeholder="0000">
+            </div>
+          </div>
+
+          <div class="field-row">
+            <label>住所</label>
+            <input type="text" name="address_detail" placeholder="例: 〇〇町1-2-3">
+          </div>
+
+          <div class="field-row">
+            <label>緯度</label>
+            <input type="number" step="0.000001" name="lat" placeholder="40.8244">
+          </div>
+
+          <div class="field-row">
+            <label>経度</label>
+            <input type="number" step="0.000001" name="lng" placeholder="140.7400">
+          </div>
+
+          <div class="field-row">
+            <label>避難所名</label>
+            <input type="text" name="name" required>
+          </div>
+
+          <div class="field-row">
+            <label>収容可能人数</label>
+            <div class="checkbox-group">
+              {% for option in capacity_options %}
+                <label><input type="checkbox" name="capacity_option" value="{{ option.value }}"> {{ option.label }}</label>
+              {% endfor %}
+            </div>
+          </div>
+
+          <div class="field-row">
+            <label>ペット</label>
+            <select name="pet">
+              <option value="可">可</option>
+              <option value="不可">不可</option>
+            </select>
+          </div>
+
+          <div class="field-row">
+            <label>バリアフリー</label>
+            <select name="barrier_free">
+              <option value="有">有</option>
+              <option value="無">無</option>
+            </select>
+          </div>
+
+          <div class="field-row">
+            <label>開設状況</label>
+            <select name="opening_status">
+              <option value="開設〇">開設〇</option>
+              <option value="閉設✖">閉設✖</option>
+            </select>
+          </div>
+
+          <div class="field-row">
+            <label>コメント</label>
+            <textarea name="comment" rows="4" placeholder="管理者コメントを入力"></textarea>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="primary-btn">登録する</button>
+          </div>
+        </div>
+
+        <div id="updateForm" class="form-panel hidden">
+          <div class="field-row">
+            <label>避難所名</label>
+            <input type="text" name="name_update" placeholder="更新対象の名前を入力">
+          </div>
+          <div class="field-row">
+            <label>新しいコメント</label>
+            <textarea name="comment_update" rows="4"></textarea>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="primary-btn">更新する</button>
+          </div>
+        </div>
+
+        <div id="deleteForm" class="form-panel hidden">
+          <p>選択した避難所を削除します。削除後は一覧と検索結果から消えます。</p>
+          <div class="form-actions">
+            <button type="submit" class="danger-btn">削除する</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<style>
+  .manage-layout { display: grid; grid-template-columns: 280px 1fr; gap: 20px; align-items: start; }
+  .manage-actions { background: #f8fbff; border: 1px solid #dce9f8; border-radius: 12px; padding: 16px; }
+  .action-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+  .action-btn { border: 1px solid #cdddf0; background: #fff; border-radius: 10px; padding: 10px 12px; text-align: left; cursor: pointer; }
+  .action-btn.is-active { background: #1b4f9b; color: #fff; border-color: #1b4f9b; }
+  .manage-form-area { background: #fff; border: 1px solid #dce9f8; border-radius: 12px; padding: 16px; }
+  .field-row { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+  .inline-fields { display: flex; align-items: center; gap: 8px; }
+  .inline-fields input { width: 80px; }
+  .checkbox-group { display: flex; flex-wrap: wrap; gap: 10px; }
+  .hidden { display: none; }
+  .message { padding: 10px 12px; border-radius: 8px; margin-bottom: 12px; }
+  .message.success { background: #ecfdf3; color: #166534; }
+  .message.error { background: #fef2f2; color: #b91c1c; }
+  .primary-btn { background: #1b4f9b; color: #fff; border: none; border-radius: 10px; padding: 10px 14px; cursor: pointer; }
+  .danger-btn { background: #dc2626; color: #fff; border: none; border-radius: 10px; padding: 10px 14px; cursor: pointer; }
+  .hint { color: #5d738c; font-size: 0.9rem; }
+  @media (max-width: 768px) { .manage-layout { grid-template-columns: 1fr; } }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const actionButtons = document.querySelectorAll('.action-btn');
+    const panels = document.querySelectorAll('.form-panel');
+    const actionInput = document.getElementById('actionInput');
+    const shelterSelect = document.getElementById('shelterSelect');
+    const shelterIdInput = document.getElementById('shelterIdInput');
+
+    actionButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        actionButtons.forEach((btn) => btn.classList.remove('is-active'));
+        button.classList.add('is-active');
+
+        const action = button.dataset.action;
+        actionInput.value = action;
+        panels.forEach((panel) => panel.classList.add('hidden'));
+
+        if (action === 'create') {
+          document.getElementById('createForm').classList.remove('hidden');
+        } else if (action === 'update') {
+          document.getElementById('updateForm').classList.remove('hidden');
+        } else {
+          document.getElementById('deleteForm').classList.remove('hidden');
+        }
+      });
+    });
+
+    shelterSelect?.addEventListener('change', function () {
+      shelterIdInput.value = this.value;
+    });
+  });
+</script>
+{% endblock %}

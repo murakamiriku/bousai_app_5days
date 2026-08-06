@@ -1,14 +1,86 @@
 [
   {
     "id": 1,
-    "name": "御所見小学校"
+    "name": "御所見小学校",
+    "postal_code": "",
+    "address": "青森県青森市",
+    "lat": "",
+    "lng": "",
+    "capacity": [],
+    "pet": "可",
+    "barrier_free": "有",
+    "opening_status": "開設〇",
+    "comment": ""
   },
   {
     "id": 2,
-    "name": "片瀬小学校"
+    "name": "片瀬小学校",
+    "postal_code": "",
+    "address": "青森県青森市",
+    "lat": "",
+    "lng": "",
+    "capacity": [],
+    "pet": "可",
+    "barrier_free": "有",
+    "opening_status": "開設〇",
+    "comment": ""
   },
   {
     "id": 5,
-    "name": "鵠洋小学校"
+    "name": "鵠洋小学校",
+    "postal_code": "",
+    "address": "青森県青森市",
+    "lat": "",
+    "lng": "",
+    "capacity": [],
+    "pet": "可",
+    "barrier_free": "有",
+    "opening_status": "開設〇",
+    "comment": ""
+  },
+  {
+    "name": "あああ",
+    "created_at": "2026年08月05日 15:07",
+    "id": "shelter-4",
+    "postal_code": "",
+    "address": "青森県青森市",
+    "lat": "",
+    "lng": "",
+    "capacity": [],
+    "pet": "可",
+    "barrier_free": "有",
+    "opening_status": "開設〇",
+    "comment": ""
+  },
+  {
+    "name": "あああ",
+    "created_at": "2026年08月05日 15:14",
+    "id": "shelter-5",
+    "postal_code": "",
+    "address": "青森県青森市",
+    "lat": "",
+    "lng": "",
+    "capacity": [],
+    "pet": "可",
+    "barrier_free": "有",
+    "opening_status": "開設〇",
+    "comment": ""
+  },
+  {
+    "id": "shelter-6",
+    "name": "あおもり",
+    "postal_code": "",
+    "address": "青森県青森市青森県青森市中央1丁目22-5",
+    "lat": "",
+    "lng": "",
+    "capacity": [
+      "〜300"
+    ],
+    "pet": "可",
+    "barrier_free": "有",
+    "opening_status": "開設〇",
+    "comment": "",
+    "created_at": "2026年08月06日 11:01",
+    "updated_at": "2026年08月06日 11:01"
   }
 ]

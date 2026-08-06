@@ -4,23 +4,332 @@
   <meta charset="utf-8">
   <title>{% block title %}防災アプリ{% endblock %}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* ベーススタイル */
+    body {
+      font-family: 'Noto Sans JP', system-ui, -apple-system, 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Meiryo', sans-serif;
+      background: #f6f9fb;
+      margin: 0;
+      color: #243646;
+    }
+
+    /* ヘッダー */
+    .site-header {
+      background: linear-gradient(180deg, #1e62b8 0%, #1b57a9 100%);
+      color: #fff;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      box-shadow: 0 2px 6px rgba(23,47,77,0.08);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .site-header .logo { font-weight: 700; font-size: 20px; letter-spacing: .02em; }
+    .site-header .menu {
+      margin-left: auto;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      padding: 0;
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.16);
+      color: #fff;
+      cursor: pointer;
+      font-size: 24px;
+      line-height: 1;
+    }
+    .site-header .menu:hover,
+    .site-header .menu:focus-visible {
+      background: rgba(255,255,255,0.24);
+      outline: none;
+    }
+
+    /* ページ幅とカード */
+    .container { max-width: 980px; margin: 32px auto; padding: 0 16px; }
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 18px;
+      box-shadow: 0 8px 20px rgba(23,47,77,0.06);
+      margin-bottom: 28px;
+    }
+
+    .card-title { display: flex; align-items: center; gap: 8px; color: #1b4f9b; font-weight: 700; margin-bottom: 12px; }
+    .card-title .icon { width: 28px; height: 28px; border-radius: 50%; background: #eaf3ff; display:flex; align-items:center; justify-content:center; color: #1b4f9b; }
+    .card .map { border-radius: 10px; overflow: hidden; height: 320px; }
+
+    .search-hero {
+      position: relative;
+      min-height: 55vh;
+      padding: 40px 0;
+      background: #e9f0fb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .search-hero .map-area {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, #bdd8ff 0%, #ffffff 60%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #1b4f9b;
+      font-size: 1.1rem;
+      text-shadow: 0 1px 2px rgba(255,255,255,0.8);
+    }
+    .search-hero .map-area::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.35), transparent 20%), radial-gradient(circle at 80% 30%, rgba(255,255,255,0.25), transparent 18%);
+      pointer-events: none;
+    }
+    .search-hero .search-box {
+      position: relative;
+      z-index: 1;
+      width: min(860px, calc(100% - 32px));
+      background: rgba(255,255,255,0.92);
+      border: 1px solid rgba(27,79,155,0.12);
+      border-radius: 16px;
+      box-shadow: 0 18px 50px rgba(23,47,77,0.12);
+      padding: 22px 24px;
+      backdrop-filter: blur(10px);
+    }
+    .search-hero .search-box h2 {
+      margin-bottom: 10px;
+      color: #1b4f9b;
+    }
+    .search-hero .search-box form {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .search-hero .search-box input[type="text"] {
+      flex: 1 1 220px;
+      min-width: 180px;
+      border: 1px solid #ccd8e9;
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-size: 1rem;
+      color: #243646;
+      outline: none;
+    }
+    .search-hero .filter-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .search-hero .filter-row label {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 0.92rem;
+      color: #2e4263;
+    }
+    .search-hero .filter-row select {
+      width: 100%;
+      border: 1px solid #ccd8e9;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 0.98rem;
+      color: #243646;
+      background: #fff;
+      outline: none;
+    }
+    .search-hero .filter-row select:focus {
+      border-color: #1b4f9b;
+      box-shadow: 0 0 0 4px rgba(27,79,155,0.12);
+    }
+    .search-hero .checkbox-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 14px;
+      margin-top: 18px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(27,79,155,0.12);
+    }
+    .search-hero .checkbox-row .checkbox-item {
+      display: inline-flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 8px;
+      min-height: 44px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
+      border: 1px solid #cdddf0;
+      box-shadow: 0 2px 8px rgba(27,79,155,0.08);
+      font-size: 0.95rem;
+      color: #243646;
+      min-width: 0;
+      white-space: nowrap;
+      line-height: 1.2;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    }
+    .search-hero .checkbox-row .checkbox-item:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(27,79,155,0.12);
+      border-color: #8eb8ef;
+    }
+    .search-hero .checkbox-item input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      flex: none;
+      min-width: 0;
+      margin: 0;
+      accent-color: #1b4f9b;
+      cursor: pointer;
+    }
+    .search-hero .search-box input:focus {
+      border-color: #1b4f9b;
+      box-shadow: 0 0 0 4px rgba(27,79,155,0.12);
+    }
+    .search-hero .search-box button {
+      border: none;
+      background: #1b4f9b;
+      color: #fff;
+      padding: 14px 22px;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background .2s ease;
+    }
+    .search-hero .search-box button:hover {
+      background: #184987;
+    }
+
+    .refresh { color: #18a058; font-weight: 700; margin-left: auto; display:flex; align-items:center; gap:6px; }
+
+    /* 小さなユーティリティ */
+    h1, h2, h3 { margin: 0 0 12px 0; }
+    p { margin: 0 0 8px 0; }
+
+    .menu-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(9, 23, 38, 0.35);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+      z-index: 45;
+    }
+    .menu-backdrop.is-visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .site-nav {
+      position: fixed;
+      top: 78px;
+      right: 16px;
+      width: min(320px, calc(100% - 24px));
+      padding: 12px;
+      border-radius: 16px;
+      background: #fff;
+      border: 1px solid #dce8f6;
+      box-shadow: 0 16px 40px rgba(23,47,77,0.16);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transform: translateY(-8px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      z-index: 60;
+    }
+    .site-nav.is-open,
+    .site-nav.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+    .site-nav .nav-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 4px 4px 8px;
+      border-bottom: 1px solid #e3edf8;
+      margin-bottom: 4px;
+    }
+    .site-nav .nav-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #1b4f9b;
+    }
+    .site-nav .menu-close {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border: none;
+      border-radius: 10px;
+      background: #f2f6fb;
+      color: #243646;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+    .site-nav a {
+      display: flex;
+      align-items: center;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: #f7fbff;
+      color: #243646;
+      text-decoration: none;
+      font-weight: 600;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+    .site-nav a:hover,
+    .site-nav a:focus-visible {
+      background: #eaf3ff;
+      color: #1b4f9b;
+      outline: none;
+    }
+    .site-nav .menu-user {
+      padding: 10px 14px;
+      color: #4f6786;
+      font-size: 0.95rem;
+    }
+  </style>
 </head>
 <body>
   <!-- ヘッダー -->
-  <h1>防災アプリ</h1>
+    <header class="site-header">
+      <div class="logo">防災アプリ</div>
+      <button class="menu" type="button" id="menuToggle" aria-label="メニューを開く" aria-expanded="false" aria-controls="site-nav">
+        ☰
+      </button>
+    </header>
 
-  <!-- ナビゲーション -->
-  <nav>
-    <a href="/">ホーム</a> |
-    <a href="/shelter_search">避難所検索</a> |
-    <a href="/shelter_register">避難所登録</a> |
+  <div class="menu-backdrop" id="menuBackdrop" aria-hidden="true"></div>
+
+  <nav class="site-nav" id="site-nav" aria-label="サイトメニュー" aria-hidden="true" role="dialog" aria-modal="false">
+    <div class="nav-header">
+      <span class="nav-title">メニュー</span>
+      <button class="menu-close" type="button" id="menuClose" aria-label="メニューを閉じる">×</button>
+    </div>
+    <a href="/">ホーム</a>
+    <a href="/shelter_search">避難所検索</a>
+    <a href="/shelter_manage">避難所管理</a>
     <a href="/board">指示・発信ボード</a>
-    ｜
     {% if session.logged_in %}
-      ログイン中{% if session.username %}（{{ session.username }}）{% endif %}
+      <span class="menu-user">ログイン中{% if session.username %}（{{ session.username }}）{% endif %}</span>
       <a href="/logout">ログアウト</a>
     {% else %}
-      未ログイン
       <a href="/login">ログイン</a>
     {% endif %}
   </nav>
@@ -30,5 +339,56 @@
     <!-- ここに子テンプレートの content が入る -->
     {% block content %}{% endblock %}
   </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const menuToggle = document.getElementById('menuToggle');
+      const menuClose = document.getElementById('menuClose');
+      const siteNav = document.getElementById('site-nav');
+      const menuBackdrop = document.getElementById('menuBackdrop');
+
+      if (!menuToggle || !siteNav || !menuBackdrop) {
+        return;
+      }
+
+      function openMenu() {
+        siteNav.classList.add('is-open', 'active');
+        menuBackdrop.classList.add('is-visible');
+        menuToggle.setAttribute('aria-expanded', 'true');
+        siteNav.setAttribute('aria-hidden', 'false');
+        menuBackdrop.setAttribute('aria-hidden', 'false');
+      }
+
+      function closeMenu() {
+        siteNav.classList.remove('is-open', 'active');
+        menuBackdrop.classList.remove('is-visible');
+        menuToggle.setAttribute('aria-expanded', 'false');
+        siteNav.setAttribute('aria-hidden', 'true');
+        menuBackdrop.setAttribute('aria-hidden', 'true');
+      }
+
+      menuToggle.addEventListener('click', () => {
+        const expanded = menuToggle.getAttribute('aria-expanded') === 'true';
+        if (expanded) {
+          closeMenu();
+        } else {
+          openMenu();
+        }
+      });
+
+      menuClose?.addEventListener('click', closeMenu);
+      menuBackdrop.addEventListener('click', closeMenu);
+
+      siteNav.querySelectorAll('a').forEach((link) => {
+        link.addEventListener('click', closeMenu);
+      });
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && siteNav.classList.contains('is-open')) {
+          closeMenu();
+        }
+      });
+    });
+  </script>
 </body>
 </html>

@@ -1,8 +1,62 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>避難所検索</h2>
-<p>登録されている避難所を確認できます。</p>
+<section class="search-hero">
+  <div class="map-area">ここにマップを表示します</div>
+  <div class="search-box">
+    <h2>避難所を検索</h2>
+    <form action="/search_results" method="get">
+      <input type="text" name="q" placeholder="住所、施設名、地域名で検索" aria-label="避難所検索入力" value="{{ query or '' }}" />
+      <button type="submit">検索</button>
+    </form>
+    <div class="filter-row">
+      <label>
+        <span>現在地からの距離</span>
+        <select name="distance">
+          <option value="" {% if not distance %}selected{% endif %}>指定なし</option>
+          <option value="1" {% if distance == '1' %}selected{% endif %}>1km以内</option>
+          <option value="3" {% if distance == '3' %}selected{% endif %}>3km以内</option>
+          <option value="5" {% if distance == '5' %}selected{% endif %}>5km以内</option>
+        </select>
+      </label>
+      <label>
+        <span>混雑具合</span>
+        <select name="crowd">
+          <option value="" {% if not crowd %}selected{% endif %}>指定なし</option>
+          <option value="low" {% if crowd == 'low' %}selected{% endif %}>空きあり</option>
+          <option value="medium" {% if crowd == 'medium' %}selected{% endif %}>やや混雑</option>
+          <option value="high" {% if crowd == 'high' %}selected{% endif %}>混雑</option>
+        </select>
+      </label>
+      <label>
+        <span>その他の配慮（バリアフリー、持病等）</span>
+        <select name="support">
+          <option value="" {% if not support %}selected{% endif %}>指定なし</option>
+          <option value="wheelchair" {% if support == 'wheelchair' %}selected{% endif %}>バリアフリー</option>
+          <option value="medical" {% if support == 'medical' %}selected{% endif %}>持病対応可</option>
+          <option value="both" {% if support == 'both' %}selected{% endif %}>両方</option>
+        </select>
+      </label>
+    </div>
+    <div class="checkbox-row">
+      <label class="checkbox-item"><input type="checkbox" name="area" value="central1" /> 中央地区（１）</label>
+      <label class="checkbox-item"><input type="checkbox" name="area" value="central2" /> 中央地区（２）</label>
+      <label class="checkbox-item"><input type="checkbox" name="area" value="east" /> 東部地区</label>
+      <label class="checkbox-item"><input type="checkbox" name="area" value="west" /> 西部地区</label>
+      <label class="checkbox-item"><input type="checkbox" name="area" value="south" /> 南部地区</label>
+      <label class="checkbox-item"><input type="checkbox" name="area" value="north" /> 北部地区</label>
+      <label class="checkbox-item"><input type="checkbox" name="area" value="namioka" /> 浪岡地区</label>
+    </div>
+  </div>
+</section>
 
-<p><a href="/all_shelters">全施設一覧</a></p>
+<div class="container">
+  <div class="card">
+    <p>避難所を検索して、近くの避難場所を見つけましょう。</p>
+    <div style="display:flex; flex-wrap:wrap; gap:12px; margin-top:10px;">
+      <a href="/all_shelters" style="color:#1b4f9b; font-weight:600; text-decoration:none;">開設済みの避難所の一覧はこちら</a>
+      <a href="/unopened_shelters" style="color:#1b4f9b; font-weight:600; text-decoration:none;">未開設の避難所の一覧はこちら</a>
+    </div>
+  </div>
+</div>
 {% endblock %}

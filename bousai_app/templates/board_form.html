@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+
+{% block title %}{% if mode == 'resident' %}住民向け発信作成{% else %}庁内向け指示作成{% endif %} - 防災アプリ{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="card">
+    <div class="card-title">
+      <div class="icon">✉️</div>
+      <div>{% if mode == 'resident' %}住民向け発信作成{% else %}庁内向け指示作成{% endif %}</div>
+    </div>
+
+    {% if message %}
+      <div class="message {{ message_type or 'info' }}">{{ message }}</div>
+    {% endif %}
+
+    <form method="post" class="board-form">
+      {% if mode == 'internal' %}
+      <div class="form-grid">
+        <label>
+          <span>件名</span>
+          <input type="text" name="title" value="{{ form_values.title }}" required>
+        </label>
+        <label>
+          <span>宛先部署</span>
+          <input type="text" name="recipient_department" value="{{ form_values.recipient_department }}">
+        </label>
+        <label>
+          <span>宛先担当者</span>
+          <input type="text" name="recipient_person" value="{{ form_values.recipient_person }}">
+        </label>
+        <label>
+          <span>優先度</span>
+          <select name="priority">
+            <option value="" {% if not form_values.priority %}selected{% endif %}>指定なし</option>
+            <option value="高" {% if form_values.priority == '高' %}selected{% endif %}>高</option>
+            <option value="中" {% if form_values.priority == '中' %}selected{% endif %}>中</option>
+            <option value="低" {% if form_values.priority == '低' %}selected{% endif %}>低</option>
+          </select>
+        </label>
+        <label>
+          <span>対応期限</span>
+          <input type="text" name="deadline" value="{{ form_values.deadline }}">
+        </label>
+      </div>
+      {% else %}
+      <div class="form-grid">
+        <label>
+          <span>タイトル</span>
+          <input type="text" name="title" value="{{ form_values.title }}" required>
+        </label>
+        <label>
+          <span>発信エリア</span>
+          <input type="text" name="area" value="{{ form_values.area }}">
+        </label>
+        <label>
+          <span>緊急度</span>
+          <select name="urgency">
+            <option value="" {% if not form_values.urgency %}selected{% endif %}>指定なし</option>
+            <option value="高" {% if form_values.urgency == '高' %}selected{% endif %}>高</option>
+            <option value="中" {% if form_values.urgency == '中' %}selected{% endif %}>中</option>
+            <option value="低" {% if form_values.urgency == '低' %}selected{% endif %}>低</option>
+          </select>
+        </label>
+        <label>
+          <span>公開日時</span>
+          <input type="text" name="published_at" value="{{ form_values.published_at }}" placeholder="例: 2026/08/06 10:00">
+        </label>
+      </div>
+      {% endif %}
+
+      <div class="template-box">
+        <label>
+          <span>テンプレートを選択</span>
+          <select id="templateSelect">
+            <option value="">選択してください</option>
+            {% if mode == 'internal' %}
+            <option value="現地確認依頼">現地確認依頼</option>
+            <option value="避難所開設指示">避難所開設指示</option>
+            <option value="物資確認依頼">物資確認依頼</option>
+            {% else %}
+            <option value="避難指示">避難指示</option>
+            <option value="避難所開設">避難所開設</option>
+            <option value="道路・交通情報">道路・交通情報</option>
+            {% endif %}
+          </select>
+        </label>
+        <button type="button" id="insertTemplateBtn" class="secondary-btn" disabled>本文に挿入</button>
+      </div>
+
+      <label class="full-width">
+        <span>{% if mode == 'internal' %}指示内容{% else %}内容{% endif %}</span>
+        <textarea name="content" id="contentField" rows="8" required>{{ form_values.content }}</textarea>
+      </label>
+
+      {% if mode == 'internal' %}
+      <label class="full-width">
+        <span>報告方法</span>
+        <textarea name="report_method" rows="4">{{ form_values.report_method }}</textarea>
+      </label>
+      <label class="full-width">
+        <span>完了条件（任意）</span>
+        <textarea name="completion_condition" rows="4">{{ form_values.completion_condition }}</textarea>
+      </label>
+      {% endif %}
+
+      <label class="full-width">
+        <span>注意事項・補足</span>
+        <textarea name="notes" rows="4">{{ form_values.notes }}</textarea>
+      </label>
+
+      <div class="button-row">
+        <button type="submit" name="submit_action" value="draft" class="secondary-btn">下書き保存</button>
+        <button type="submit" name="submit_action" value="submit" class="primary-btn">送信する</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<style>
+  .message { padding: 10px 12px; border-radius: 10px; margin-bottom: 12px; font-weight: 600; }
+  .message.error { background: #ffe9e9; color: #b42318; }
+  .message.success { background: #e7f7ed; color: #157f3b; }
+  .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-bottom: 12px; }
+  .board-form label { display: flex; flex-direction: column; gap: 6px; font-weight: 600; color: #2e4263; }
+  .board-form input, .board-form select, .board-form textarea { border: 1px solid #ccd8e9; border-radius: 10px; padding: 10px 12px; font-size: 0.98rem; }
+  .board-form textarea { min-height: 120px; }
+  .full-width { margin-top: 12px; }
+  .template-box { display: flex; flex-wrap: wrap; align-items: end; gap: 10px; margin: 12px 0; }
+  .primary-btn, .secondary-btn { border: none; border-radius: 999px; padding: 10px 14px; font-weight: 700; cursor: pointer; }
+  .primary-btn { background: #1b4f9b; color: #fff; }
+  .secondary-btn { background: #eaf3ff; color: #1b4f9b; }
+  .button-row { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+  #insertTemplateBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+  @media (max-width: 700px) { .form-grid { grid-template-columns: 1fr; } }
+</style>
+
+<script>
+  const templates = {
+    internal: {
+      '現地確認依頼': '〇〇の状況を現地で確認してください。確認後、現場の状況、対応の要否、写真を本システムに登録してください。安全を最優先とし、危険がある場合は接近しないでください。',
+      '避難所開設指示': '〇〇避難所の開設準備を開始してください。施設の安全確認、必要物資、受入可能人数を確認し、準備完了後に本システムへ報告してください。',
+      '物資確認依頼': '〇〇避難所の食料、飲料水、毛布、衛生用品の在庫を確認してください。不足がある場合は、品目と必要数量を本システムへ登録してください。'
+    },
+    resident: {
+      '避難指示': '現在、〇〇の影響により、〇〇地区に避難指示を発令しています。対象地域の皆さまは、周囲の安全を確認し、速やかに安全な場所へ避難してください。',
+      '避難所開設': '〇〇避難所を開設しました。避難される方は、可能な範囲で食料、飲料水、常備薬などを持参してください。周辺の安全を確認して移動してください。',
+      '道路・交通情報': '〇〇付近では、〇〇の影響により通行規制を実施しています。危険ですので現場には近づかず、別の経路を利用してください。'
+    }
+  };
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const select = document.getElementById('templateSelect');
+    const button = document.getElementById('insertTemplateBtn');
+    const contentField = document.getElementById('contentField');
+    const mode = {{ 'internal' if mode == 'internal' else 'resident' | tojson }};
+
+    if (!select || !button || !contentField) return;
+
+    button.disabled = !select.value;
+    select.addEventListener('change', function() {
+      button.disabled = !this.value;
+    });
+
+    button.addEventListener('click', function() {
+      const selected = select.value;
+      if (!selected) return;
+      const text = templates[mode][selected] || '';
+      if (!text) return;
+      if (contentField.value.trim()) {
+        const shouldReplace = window.confirm('本文は既に入力されています。テンプレートで上書きしますか？');
+        if (!shouldReplace) {
+          contentField.value = `${contentField.value}\n\n${text}`;
+          return;
+        }
+      }
+      contentField.value = text;
+    });
+  });
+</script>
+{% endblock %}

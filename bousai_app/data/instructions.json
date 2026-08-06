@@ -34,5 +34,36 @@
     "status": "完了",
     "created_at": "2026年07月14日 18:22",
     "updated_at": "2026年07月14日 18:22"
+  },
+  {
+    "id": 5,
+    "kind": "resident",
+    "target": "住民",
+    "title": "あいうえお",
+    "area": "青森",
+    "urgency": "高",
+    "content": "現在、〇〇の影響により、〇〇地区に避難指示を発令しています。対象地域の皆さまは、周囲の安全を確認し、速やかに安全な場所へ避難してください。",
+    "published_at": "",
+    "notes": "",
+    "status": "公開中",
+    "created_at": "2026年08月06日 11:26",
+    "updated_at": "2026年08月06日 11:26"
+  },
+  {
+    "id": 6,
+    "kind": "internal",
+    "target": "防災課",
+    "title": "かきくけこ",
+    "recipient_department": "",
+    "recipient_person": "",
+    "priority": "",
+    "deadline": "",
+    "content": "あ",
+    "report_method": "",
+    "completion_condition": "",
+    "notes": "",
+    "status": "送信済み",
+    "created_at": "2026年08月06日 11:28",
+    "updated_at": "2026年08月06日 11:28"
   }
 ]
